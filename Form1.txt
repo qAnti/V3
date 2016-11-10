@@ -1,0 +1,1627 @@
+﻿Imports System.IO
+Imports Microsoft.Win32
+Imports System.Net
+Imports System.Net.NetworkInformation
+Imports System.Security.Cryptography
+Imports System.Text
+Imports System.Security.AccessControl
+Imports System.Diagnostics
+Imports System.Security.Permissions
+Imports System.Threading
+Imports System.ServiceProcess
+Imports System.EventArgs
+Imports System
+
+
+
+Public Class Form1
+    Dim versiune As String = "2.0"
+    Private Property exception As String
+
+    Private Property Results As String
+    '/////////GetMac
+    Function getMacAddress()
+        Dim nics() As NetworkInterface = _
+            NetworkInterface.GetAllNetworkInterfaces
+        Return nics(0).GetPhysicalAddress.ToString
+    End Function
+    Declare Sub Sleep Lib "kernel32.dll" (ByVal Milliseconds As Integer)
+    Private Declare Function GetKeyPress Lib "user32" Alias "GetAsyncKeyState" (ByVal key As Integer) As Integer
+    Private Declare Sub mouse_event Lib "user32.dll" (ByVal dwFlags As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal cButtons As Integer, ByVal dwExtraInfo As IntPtr)
+
+    Public Const MOUSEEVENTF_LEFTDOWN = &H2 ' left button down
+    Public Const MOUSEEVENTF_LEFTUP = &H4 ' left button up
+    Public Const MOUSEEVENTF_RIGHTDOWN = &H6
+    Public Const MOUSEEVENTF_RIGHTUP = &H8
+    Private Declare Function mciSendString Lib "winmm.dll" Alias "mciSendStringA" (ByVal lpstrCommand As String, ByVal lpstrReturnString As String, ByVal uReturnLength As Integer, ByVal hwndCallback As Integer) As Integer
+    Private Sub CMDAutomate()
+        Dim CMDThread As New Threading.Thread(AddressOf CMDAutomate)
+        CMDThread.Start()
+    End Sub
+    Dim myprocess As New Process
+    Dim StartInfo As New System.Diagnostics.ProcessStartInfo
+    '//////////Colors Label1
+    '//////////Form Load
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Dim caleste As WebClient = New WebClient
+        Dim iuzar As String = caleste.DownloadString("http://api.xpeedo.net/retrive_username.php?key=" + Form2.TextBox1.Text)
+        FormSkin1.Text = "CheatsTW.com :: " + iuzar
+        FlatStatusBar1.Text = "CheatsTW.com  |  v" & versiune
+        Dim p() As Process
+        Dim proc As String
+        proc = "gta_sa"
+        p = Process.GetProcessesByName("gta_sa")
+        If p.Count = 1 Then 'Multiple Process
+
+            FlatStatusBar2.ForeColor = Color.Green
+            FlatStatusBar2.RectColor = Color.Green
+            FlatStatusBar2.Text = "Jocul este pornit"
+        ElseIf p.Count > 1 Then 'Multiple Process
+            FlatStatusBar2.ForeColor = Color.Red
+            FlatStatusBar2.RectColor = Color.Red
+            FlatStatusBar2.Text = "Prea multe ferestre deschise"
+        ElseIf p.Count = 0 Then
+            FlatStatusBar2.ForeColor = Color.Red
+            FlatStatusBar2.RectColor = Color.Red
+            FlatStatusBar2.Text = "Jocul nu este pornit"
+
+        End If
+
+        CheckBox5.Checked = False
+        CheckBox4.Checked = False
+        ComboBox1.SelectedIndex = 1
+        ComboBox2.SelectedIndex = 0
+        ComboBox3.SelectedIndex = 0
+        Timer2.Interval = 300000
+        Timer5.Interval = 10
+        Timer8.Interval = 1
+        Timer9.Interval = 1
+        Timer11.Interval = 1
+        Timer13.Interval = 10
+        Timer14.Interval = 150
+        Timer18.Interval = 1
+        Timer19.Interval = 1
+        Timer6.Interval = 1
+        Timer7.Interval = 1
+        Timer20.Interval = 1
+        Timer21.Interval = 1
+        Timer23.Interval = 100
+        Timer2.Start()
+        Timer5.Start()
+        Timer6.Start()
+        Timer7.Start()
+        Timer8.Start()
+        Timer9.Start()
+        Timer11.Start()
+        Timer13.Start()
+        Timer14.Start()
+        Timer15.Start()
+        Timer16.Start()
+        Timer18.Start()
+        Timer19.Start()
+        Timer20.Start()
+        Timer21.Start()
+        Timer22.Start()
+        Timer23.Start()
+        Timer24.Start()
+        Timer25.Start()
+
+    End Sub
+    '//////////Key Banat Delogare Fortata
+    Private Sub Timer2_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer2.Tick
+
+        Dim status As WebClient = New WebClient
+
+        Dim data As Byte() = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(getMacAddress))
+        Dim sBuilder As New StringBuilder()
+        Dim i As Integer
+        For i = 0 To data.Length - 1
+            sBuilder.Append(data(i).ToString("x2"))
+        Next i
+
+        Dim swagger As String = status.DownloadString("http://api.xpeedo.net/check_api.php?key=" + Form2.TextBox1.Text + "&set=0&hash=" + sBuilder.ToString + "&userpc=" + Label8.Text + "&version=" + versiune)
+
+        If swagger.Contains("Key banat") Then
+            My.Computer.Audio.Play(My.Resources.status, AudioPlayMode.WaitToComplete)
+            MsgBox("Key-ul tau a fost banat deoarece altcineva a incercat sa se logheze cu el de pe alt PC sau a fost banat de un admin." + vbNewLine + "Pentru debanarea key-ului te rugam sa folosesti livechat-ul.", MsgBoxStyle.OkOnly, "Suspended")
+            Application.Exit() ' INCHIDE APP
+        ElseIf swagger.Contains("0") Then
+            MsgBox("Key-ul tau nu mai este valabil!" + vbNewLine + "Daca este o greseala, te rugam sa ne contactezi pe livechat!", MsgBoxStyle.OkOnly, "Status")
+            Application.Exit() ' INCHIDE APP
+        Else
+            'NIMIC
+        End If
+
+    End Sub
+    '//////////Imagine cu muzica
+    Private Sub PictureBox1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        'ICOANA DE NOROC NU STERGE
+        My.Computer.Audio.Play(My.Resources.easter, AudioPlayMode.WaitToComplete)
+        MsgBox("Felicitari! Ai gasit motivatia!" + vbNewLine + "Da click de 10 ori pe imagine pentru mai mult noroc la war/paint!", MsgBoxStyle.OkOnly, "EasterEgg")
+    End Sub
+    '//////////Stire
+    Private Sub Button14_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
+
+    End Sub
+    '//////////NoReload
+    Private Sub Timer5_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer5.Tick
+        If CheckBox2.Checked = True Then
+            Dim proc As String = "gta_sa"
+            Try
+                Dim wid = ReadDMALong(proc, "&HB6F5F0", Offsets:={&H740}, Level:=1, nsize:=4)
+                If wid = 348 Then 'DEAGLE
+
+                    Dim clip = ReadDMALong(proc, "&HB6F5F0", Offsets:={&H5E0}, Level:=1, nsize:=4)
+                    Dim total = ReadDMALong(proc, "&HB6F5F0", Offsets:={&H5E4}, Level:=1, nsize:=4)
+                    If total <= 0 Then
+                        WriteDMALong(proc, "&HB6F5F0", Offsets:={&H5E0}, Value:=0, Level:=1, nsize:=4)
+                        WriteDMALong(proc, "&HB6F5F0", Offsets:={&H5E0}, Value:=0, Level:=1, nsize:=4)
+
+                    ElseIf clip = 6 Then
+                        Threading.Thread.Sleep(10)
+                        WriteDMALong(proc, "&HB6F5F0", Offsets:={&H5E0}, Value:=clip + 1, Level:=1, nsize:=4)
+                    Else
+                        'NIMIC
+                    End If
+
+                Else 'M4A1
+
+                    Dim clip = ReadDMALong(proc, "&HB6F5F0", Offsets:={&H634}, Level:=1, nsize:=4)
+                    Dim total = ReadDMALong(proc, "&HB6F5F0", Offsets:={&H638}, Level:=1, nsize:=4)
+                    If total <= 0 Then
+                        WriteDMALong(proc, "&HB6F5F0", Offsets:={&H634}, Value:=0, Level:=1, nsize:=4)
+                        WriteDMALong(proc, "&HB6F5F0", Offsets:={&H638}, Value:=0, Level:=1, nsize:=4)
+                    ElseIf clip = 49 Then
+                        Threading.Thread.Sleep(5)
+                        WriteDMALong(proc, "&HB6F5F0", Offsets:={&H634}, Value:=clip + 1, Level:=1, nsize:=4)
+                    Else
+                        'NIMIC
+                    End If
+
+                End If
+
+            Catch ex As Exception
+
+            End Try
+        End If
+    End Sub
+    '//////////InfinitiRun
+    Private Sub Timer9_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer9.Tick
+
+        If CheckBox5.Checked = True Then 'InfinitiRun
+
+
+            Dim run = ReadLong("gta_sa", &HB7CEE4, nsize:=4)
+
+            WriteLong("gta_sa", &HB7CEE4, Value:=1)
+            If run = 1 Then
+
+                'nimic
+            Else
+            End If
+
+        ElseIf CheckBox5.Checked = False Then
+            Dim run = ReadLong("gta_sa", &HB7CEE4, nsize:=4)
+
+            WriteLong("gta_sa", &HB7CEE4, Value:=0)
+            If run = 0 Then
+
+                'nimic
+            Else
+            End If
+
+        End If
+
+
+
+
+
+    End Sub
+    '//////////MegaJump
+    Private Sub Timer11_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer11.Tick
+
+
+        If CheckBox4.Checked = True Then 'MegaJUMP
+
+
+            Dim jump = ReadLong("gta_sa", &H96916C, nsize:=4)
+
+            WriteLong("gta_sa", &H96916C, Value:=1)
+            If jump = 1 Then
+
+                'nimic
+            Else
+            End If
+        ElseIf CheckBox4.Checked = False Then
+            Dim jump = ReadLong("gta_sa", &H96916C, nsize:=4)
+
+            WriteLong("gta_sa", &H96916C, Value:=0)
+            If jump = 0 Then
+
+                'nimic
+            Else
+            End If
+        End If
+    End Sub
+    '//////////Rotation Speed
+    Private Sub Timer13_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer13.Tick
+
+        Dim proc As String = "gta_sa"
+
+        Try
+
+            If CheckBox1.Checked = True Then
+                Dim move = ReadDMALong(proc, "&HB6F5F0", Offsets:={&H560}, Level:=1, nsize:=4)
+                If move = 1103626240 Then
+                    'NIMIC
+                ElseIf move >= 1089470464 Then
+                    WriteDMALong(proc, "&HB6F5F0", Offsets:={&H560}, Value:=1103626240, Level:=1, nsize:=4)
+                Else
+                End If
+            End If
+        Catch ex As Exception
+
+        End Try
+
+    End Sub
+    '//////////Slap
+    Private Sub Timer14_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer14.Tick
+        If CheckBox3.Checked = True Then
+            If (GetKeyPress(&H79)) Then
+                Try
+                    Dim proc As String = "gta_sa"
+                    Dim zcord = ReadDMALong(proc, "&HB6F5F0", Offsets:={&H14, &H38}, Level:=2, nsize:=4)
+                    WriteDMALong(proc, "&HB6F5F0", Offsets:={&H14, &H38}, Value:=zcord + 4000000, Level:=2, nsize:=4) 'SLAP
+
+                Catch ex As Exception
+
+                End Try
+            End If
+        End If
+
+    End Sub
+    '//////////Trigger
+    Private Sub Timer16_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer16.Tick
+        Dim proc As String = "gta_sa"
+
+        If ComboBox1.SelectedIndex = 1 Then
+            'NIMIC
+        Else
+            Dim checkweapon
+            checkweapon = ReadDMAInteger(proc, "&HB6F3B8", Offsets:={&H718}, Level:=1, nsize:=4)
+            If checkweapon = 6236160 Or checkweapon = 6236161 Or checkweapon = 6563848 Or checkweapon = 6236170 Or checkweapon = 6236171 Or checkweapon = 6563852 Or checkweapon = 6236169 Then
+                'NIMIC
+            Else
+                Dim target
+                target = ReadDMAInteger(proc, "&HB6F3B8", Offsets:={&H79C}, Level:=1, nsize:=4)
+
+                If ComboBox1.SelectedIndex = 0 Then 'TRIGGERBOT
+                    If target > 0 Then
+                        mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+                        Threading.Thread.Sleep(450)
+                        WriteDMAInteger(proc, "&HB6F3B8", Offsets:={&H79C}, Value:=0, Level:=1, nsize:=4)
+                        mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+                    Else
+                    End If
+                End If
+            End If
+        End If
+
+    End Sub
+    '//////////Trigger Status ON/OF
+    Private Sub Timer18_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer18.Tick
+        If ComboBox1.SelectedIndex = 0 Then
+            If FlatLabel4.Text <> "TriggerBot ON" Then
+                FlatLabel4.ForeColor = Color.Green
+                FlatLabel4.Text = "TriggerBot ON"
+            Else
+                '
+            End If
+
+            '
+        End If
+
+        If ComboBox1.SelectedIndex = 1 Then
+            If FlatLabel4.Text <> "Trigger OFF" Then
+                FlatLabel4.ForeColor = Color.Red
+                FlatLabel4.Text = "Trigger OFF"
+            End If
+        End If
+
+    End Sub
+    '//////////Windows OS DETECTION
+    Private Sub Timer15_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer15.Tick
+        Dim major As Integer = Environment.OSVersion.Version.Major
+        Dim minor As Integer = Environment.OSVersion.Version.Minor
+
+        If major = 5 And minor = 2 Then
+            Label4.Text = "Your OS is Windows XP"
+        ElseIf major = 6 And minor = 0 Then
+            Label4.Text = "Your OS is Windows Vista"
+        ElseIf major = 6 And minor = 1 Then
+            Label4.Text = "Your OS is Windows 7"
+        ElseIf major = 5 And minor = 1 Then
+            Label4.Text = "Your OS is Windows XP"
+        ElseIf major = 6 And minor = 2 Then
+            Label4.Text = "Your OS is Windows 8/8.1/10"
+        End If
+    End Sub
+    '//////////Thermal Vision
+    Private Sub Timer6_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer6.Tick
+        Try
+            If CheckBox6.Checked = True Then 'Vision
+
+
+                Dim jump = ReadLong("gta_sa", &HC402B8, nsize:=4)
+
+                WriteLong("gta_sa", &HC402B8, Value:=256)
+                If jump = 1 Then
+                    'nimic
+                Else
+                End If
+            ElseIf CheckBox6.Checked = False Then
+                Dim jump = ReadLong("gta_sa", &HC402B8, nsize:=4)
+
+                WriteLong("gta_sa", &HC402B8, Value:=0)
+                If jump = 0 Then
+                    'nimic
+                Else
+                End If
+            End If
+
+        Catch ex As Exception
+
+        End Try
+    End Sub
+    '/////////F8 HP COLORS OFF SS
+    Private Sub Timer7_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer7.Tick
+        Dim proc As String = "gta_sa"
+        Dim read = ReadLong(proc, "&HBAB22C", nsize:=4)
+        If CheckBox6.Checked = True Or ComboBox2.SelectedIndex <> 0 Then
+            If (GetKeyPress(&H77)) Then
+                Try
+                    Dim jump = ReadLong("gta_sa", &HC402B8, nsize:=4)
+
+                    WriteLong("gta_sa", &HC402B8, Value:=0)
+                    If jump = 0 Then
+                        'nimic
+                    Else
+                    End If
+
+                    Dim normal = 4280097204
+                    WriteLong(proc, "&HBAB22C", Value:=normal, nsize:=4)
+                    If read = 4280097204 Then
+
+                    Else
+
+                    End If
+                    Threading.Thread.Sleep(1500)
+                Catch ex As Exception
+
+                End Try
+
+            End If
+        End If
+    End Sub
+    '/////////HP COLORS
+    Private Sub Timer8_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer8.Tick
+        Dim proc As String = "gta_sa"
+        Dim normal = 4280097204
+        Dim violet = 4292613180
+        Dim verde = 4278255360
+        Dim roz = 4293922800
+        Dim gri = 4288059030
+        Dim cyan = 4293518870
+        Dim albastru = 4293505302
+        Dim alb = 4293980400
+        Dim read = ReadLong(proc, "&HBAB22C", nsize:=4)
+
+        Try
+            If ComboBox2.SelectedIndex = 0 Then
+
+                'NORMAL ROSU
+                If read <> normal Then
+                    WriteLong(proc, "&HBAB22C", Value:=normal, nsize:=4)
+                Else
+
+                End If
+
+            ElseIf ComboBox2.SelectedIndex = 1 Then
+
+                'VIOLET
+                If read <> violet Then
+                    WriteLong(proc, "&HBAB22C", Value:=violet, nsize:=4)
+                Else
+                End If
+
+            ElseIf ComboBox2.SelectedIndex = 2 Then
+
+                'VERDE
+                If read <> verde Then
+                    WriteLong(proc, "&HBAB22C", Value:=verde, nsize:=4)
+                Else
+                End If
+
+            ElseIf ComboBox2.SelectedIndex = 3 Then
+
+                'ROZ
+                If read <> roz Then
+                    WriteLong(proc, "&HBAB22C", Value:=roz, nsize:=4)
+                Else
+                End If
+
+            ElseIf ComboBox2.SelectedIndex = 4 Then
+
+                'GRI
+                If read <> gri Then
+                    WriteLong(proc, "&HBAB22C", Value:=gri, nsize:=4)
+                Else
+                End If
+
+            ElseIf ComboBox2.SelectedIndex = 5 Then
+
+                'CYAN
+                If read <> cyan Then
+                    WriteLong(proc, "&HBAB22C", Value:=cyan, nsize:=4)
+                Else
+                End If
+
+            ElseIf ComboBox2.SelectedIndex = 6 Then
+
+                'ALBASTRU
+                If read <> albastru Then
+                    WriteLong(proc, "&HBAB22C", Value:=albastru, nsize:=4)
+                Else
+                End If
+
+            ElseIf ComboBox2.SelectedIndex = 7 Then
+
+                'ALB
+                If read <> alb Then
+                    WriteLong(proc, "&HBAB22C", Value:=alb, nsize:=4)
+                Else
+                End If
+
+            End If
+        Catch ex As Exception
+
+        End Try
+
+    End Sub
+    '////////Soft Stun
+    Private Sub Timer19_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer19.Tick
+        Dim p() As Process
+        Dim proc As String
+        proc = "gta_sa"
+        p = Process.GetProcessesByName("gta_sa")
+
+        If p.Count > 1 Then 'Multiple Process
+
+            Label7.ForeColor = Color.Red
+            Label7.Text = "Prea multe GTA-uri deschise"
+
+        ElseIf p.Count > 0 Then 'Process Found
+
+            If ComboBox3.SelectedIndex = 0 Then
+                Label7.ForeColor = Color.Green
+                Label7.Text = "Normal"
+
+                'RUN
+                Try
+                    If ReadDMALong(proc, "&H0xB6F5F0", Offsets:={&H46C}, Level:=1, nsize:=4) = 2147492097 Then
+                        Dim readval As String = ReadLong(proc, "&H0x863984", nsize:=4)
+                        If readval = 1006834287 Then
+
+                            WriteLong(proc, "&H0x863984", 1006834287, nsize:=4)
+                        Else
+                        End If
+                    ElseIf ReadLong(proc, "&H0x863984", nsize:=4) = 1006834287 Then
+                        WriteLong(proc, "&H0x863984", 1006834287, nsize:=4)
+                    Else
+                        'nimic
+                    End If
+                Catch ex As Exception
+                    If Label7.Text <> "Eroare..." Then
+                        Label7.ForeColor = Color.Red
+                        Label7.Text = "Eroare..."
+                    Else
+                        'NOTHING
+                    End If
+                End Try
+                'RUN
+
+            ElseIf ComboBox3.SelectedIndex = 1 Then
+                Label7.ForeColor = Color.Green
+                Label7.Text = "Soft"
+
+                ''RUN
+                Try
+                    If ReadDMALong(proc, "&H0xB6F5F0", Offsets:={&H46C}, Level:=1, nsize:=4) = 2147492097 Then
+                        Dim readval As String = ReadLong(proc, "&H0x863984", nsize:=4)
+                        If readval = 1004888130 Then
+
+                            WriteLong(proc, "&H0x863984", Value:=1004888130, nsize:=4)
+                            'Nothing
+                        Else
+                        End If
+                    ElseIf ReadLong(proc, "&H0x863984", nsize:=4) = 1006834287 Then
+
+                        WriteLong(proc, "&H0x863984", Value:=1006834287, nsize:=4)
+                        'NOTHING
+                    Else
+                    End If
+                Catch ex As Exception
+                    If Label7.Text <> "Eroare..." Then
+                        Label7.ForeColor = Color.Red
+                        Label7.Text = "Eroare..."
+                    Else
+                        'NOTHING
+                    End If
+                End Try
+                'RUN
+
+            ElseIf ComboBox3.SelectedIndex = 2 Then
+                Label7.ForeColor = Color.Green
+                Label7.Text = "Very Soft"
+
+                'RUN
+                Try
+                    If ReadDMALong(proc, "&H0xB6F5F0", Offsets:={&H46C}, Level:=1, nsize:=4) = 2147492097 Then
+                        Dim readval As String = ReadLong(proc, "&H0x863984", nsize:=4)
+                        If readval = 1002740646 Then
+
+                            WriteLong(proc, "&H0x863984", Value:=1002740646, nsize:=4)
+                            'Nothing
+                        Else
+                        End If
+                    ElseIf ReadLong(proc, "&H0x863984", nsize:=4) = 1006834287 Then
+
+                        WriteLong(proc, "&H0x863984", Value:=1006834287, nsize:=4)
+                        'NOTHING
+                    Else
+                    End If
+                Catch ex As Exception
+                    If Label7.Text <> "Eroare..." Then
+                        Label7.ForeColor = Color.Red
+                        Label7.Text = "Eroare..."
+                    Else
+                        'NOTHING
+                    End If
+                End Try
+                'RUN
+
+            ElseIf ComboBox3.SelectedIndex = 3 Then
+                Label7.ForeColor = Color.Green
+                Label7.Text = "Extremely Soft"
+
+                'RUN
+                Try
+                    If ReadDMALong(proc, "&H0xB6F5F0", Offsets:={&H46C}, Level:=1, nsize:=4) = 2147492097 Then
+                        Dim readval As String = ReadLong(proc, "&H0x863984", nsize:=4)
+                        If readval = 1000593162 Then
+
+                            WriteLong(proc, "&H0x863984", Value:=1000593162, nsize:=4)
+                            'Nothing
+                        Else
+                        End If
+                    ElseIf ReadLong(proc, "&H0x863984", nsize:=4) = 1006834287 Then
+
+                        WriteLong(proc, "&H0x863984", Value:=1006834287, nsize:=4)
+                        'NOTHING
+                    Else
+                    End If
+                Catch ex As Exception
+                    If Label7.Text <> "Eroare..." Then
+                        Label7.ForeColor = Color.Red
+                        Label7.Text = "Eroare..."
+                    Else
+                        'NOTHING
+                    End If
+                End Try
+                'RUN
+
+            Else
+                Label7.ForeColor = Color.Red
+                Label7.Text = "Error"
+            End If
+
+        Else 'Error
+
+            Label7.Text = ""
+        End If
+    End Sub
+    'Semi-recoil proiect
+    '////////Semi No-Recoil
+    '   Private Sub Timer20_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer20.Tick
+    ' Try
+    ' Dim proc As String = "gta_sa"
+    'If CheckBox7.Checked = True Then
+    'If (GetKeyPress(&H71)) Then
+    'Dim recoil = ReadLong("gta_sa", &HC8C8B3, nsize:=4)
+    '  WriteLong("gta_sa", &HC8C8B3, Value:=2147483712)
+    '  If recoil = 2147483712 Then
+
+    'nimic
+    '  Else
+    '  End If
+    ' End If
+    ' ElseIf CheckBox7.Checked = False Then
+    ' Dim recoil = ReadLong("gta_sa", &HC8C8B3, nsize:=4)
+    ' WriteLong("gta_sa", &HC8C8B3, Value:=2147483711)
+    '    If recoil = 2147483711 Then
+
+    ' Else
+    ' End If
+    ' End If
+
+    ' Catch ex As Exception
+
+    ' End Try
+
+
+    ' End Sub
+    '////////OFF Semi No-Recoil
+    ' Private Sub Timer21_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer21.Tick
+    ' Dim proc As String = "gta_sa"
+    ' If CheckBox7.Checked = True Then
+    'If (GetKeyPress(&H74)) Then
+    'Dim recoil = ReadLong(proc, "&H00C8C8B3", nsize:=4)
+    '  If recoil = 2147483712 Then
+    'WriteLong(proc, "&H00C8C8B3", Value:=2147483711, nsize:=4)
+    '   If recoil = 2147483711 Then
+    '   Else
+    '   End If
+    '   End If
+    '   End If
+    '    End If
+    ' End Sub
+    '////////Get Name and data
+    Private Sub Timer22_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer22.Tick
+        Label8.Text = My.Computer.Name
+        Label2.Text = System.DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")
+    End Sub
+    '////////MouseFix
+    Private Sub Timer23_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer23.Tick
+
+        If CheckBox8.Checked = True Then
+            Dim proc As String = "gta_sa"
+            Dim Y = ReadLong(proc, "&HB6EC18", nsize:=4)
+            Dim X = ReadLong(proc, "&HB6EC1C", nsize:=4)
+            Try
+                If X = Y Then
+                    'nimic
+                Else
+                    WriteLong(proc, "&HB6EC18", Value:=X)
+                End If
+            Catch ex As Exception
+
+            End Try
+
+        Else
+            'nimic
+
+        End If
+
+    End Sub
+    '///////Jump Bike
+    Private Sub Timer24_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer24.Tick
+
+        If CheckBox9.Checked = True Then
+            Dim jump = ReadInteger("gta_sa", &H969161, nsize:=4)
+            WriteInteger("gta_sa", &H969161, Value:=1)
+            If jump = 1 Then
+                'nimic
+            Else
+            End If
+        ElseIf CheckBox9.Checked = False Then
+            Dim jump = ReadInteger("gta_sa", &H969161, nsize:=4)
+            WriteInteger("gta_sa", &H969161, Value:=0)
+            If jump = 0 Then
+                'nimic
+            Else
+            End If
+        End If
+
+    End Sub
+    '///////Aprinzi Youtube
+    Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Form3.Show()
+    End Sub
+    '///////Conduci pe sub apa.
+    Private Sub Timer25_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer25.Tick
+        If CheckBox10.Checked = True Then
+            Dim car = ReadLong("gta_sa", &H6C2759, nsize:=4)
+            WriteLong("gta_sa", &H6C2759, Value:=2214592513)
+            If car = 2214592513 Then
+                'nimic
+            Else
+            End If
+        ElseIf CheckBox9.Checked = False Then
+            Dim car = ReadLong("gta_sa", &H6C2759, nsize:=4)
+            WriteLong("gta_sa", &H6C2759, Value:=2214592512)
+            If car = 2214592512 Then
+                'nimic
+            Else
+            End If
+        End If
+    End Sub
+
+    Private Sub FlatToggle1_CheckedChanged(sender As Object) Handles FlatToggle1.CheckedChanged
+        If FlatToggle1.Checked = True Then
+            FlatLabel1.Text = "Aimbot ON"
+            MsgBox("Apasa F3 ca sa pornesti/opresti Aimbot!(aprinde-l odata cu Wall daca vrei sa folosesti si wall, daca le aprinzi pe ambele odata nu trebuie sa le deschizi pe rand apesi direct ALT + F3 si se activeaza ambele + F2 pentru Semi No-Recoil)", MsgBoxStyle.OkOnly, "By GooD - Creator Metoda & Unknown - Creatorul Codului")
+
+
+            'Starts the CMD Prompt
+            StartInfo.FileName = "cmd.exe"
+            StartInfo.RedirectStandardInput = True
+            StartInfo.RedirectStandardOutput = True
+
+            'Required to redirect
+            StartInfo.UseShellExecute = False
+
+            'Disables the creation of a CMD Prompt outside application.
+            StartInfo.CreateNoWindow = False
+
+
+            myprocess.StartInfo = StartInfo
+            myprocess.Start()
+            Dim SR As System.IO.StreamReader = myprocess.StandardOutput
+            Dim SW As System.IO.StreamWriter = myprocess.StandardInput
+            SW.WriteLine("start R:\ReadMe.txt")
+            'Exits CMD Prompt 
+            SW.WriteLine("exit")
+        Else
+            Try
+                Dim ReadMe() As Process = Process.GetProcessesByName("ReadMe.txt")
+                FlatLabel1.Text = "Aimbot OFF"
+                For Each proc As Process In ReadMe
+                    proc.Kill()
+                Next
+            Catch ex As Exception
+
+            End Try
+        End If
+    End Sub
+
+
+    Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs)
+
+    End Sub
+
+    Private Sub FormSkin1_Click(sender As Object, e As EventArgs) Handles FormSkin1.Click
+
+    End Sub
+
+    Private Sub FlatStatusBar1_Click(sender As Object, e As EventArgs) Handles FlatStatusBar1.Click
+
+    End Sub
+
+    Private Sub FlatToggle2_CheckedChanged(sender As Object) Handles FlatToggle2.CheckedChanged
+        If FlatToggle2.Checked = True Then
+            FlatLabel2.Text = "Wall ON"
+            MsgBox("Apasa ALT + F3 ca sa pornesti/opresti wall-ul, daca faci poza in joc si ai wall-ul ON in poza nu apare ca ai Wall-Hack.", MsgBoxStyle.OkOnly, "By GooD - Creator Metoda & Unknown - Creatorul Codului")
+
+
+            'Starts the CMD Prompt
+            StartInfo.FileName = "cmd.exe"
+            StartInfo.RedirectStandardInput = True
+            StartInfo.RedirectStandardOutput = True
+
+            'Required to redirect
+            StartInfo.UseShellExecute = False
+
+            'Disables the creation of a CMD Prompt outside application.
+            StartInfo.CreateNoWindow = False
+
+
+            myprocess.StartInfo = StartInfo
+            myprocess.Start()
+
+            Dim SR As System.IO.StreamReader = myprocess.StandardOutput
+            Dim SW As System.IO.StreamWriter = myprocess.StandardInput
+
+            'Runs the command you entered...
+            'SW.WriteLine(TextBox1.Text)
+            SW.WriteLine("start F:\bootmgr.efi")
+            'Exits CMD Prompt 
+            SW.WriteLine("exit")
+
+        Else
+            Try
+                Dim bootmgr() As Process = Process.GetProcessesByName("bootmgr.efi")
+                FlatLabel2.Text = "Wall OFF"
+                For Each proc As Process In bootmgr
+                    proc.Kill()
+                Next
+            Catch ex As Exception
+
+            End Try
+            Try
+                Dim cmd() As Process = Process.GetProcessesByName("cmd")
+                For Each proc As Process In cmd
+                    proc.Kill()
+                Next
+            Catch ex As Exception
+
+            End Try
+        End If
+    End Sub
+
+    Private Sub FlatToggle3_CheckedChanged(sender As Object) Handles FlatToggle3.CheckedChanged
+        If FlatToggle3.Checked = True Then
+            FlatLabel3.Text = "Teleport ON"
+            MsgBox("Acesta cod va ajuta sa va teleportati, dati /find in joc pe o casa/biz/persoana si apasati F11 pentru a va teleporta." + vbNewLine + "Atentie!: Daca aveti war in virtual world nu puteti sa va teleportati la un coleg doar la case/bizuri dupa respectivul turfs!", MsgBoxStyle.OkOnly, "By GooD - Creator Metoda & Unknown - Creatorul Codului")
+
+
+
+            'Starts the CMD Prompt
+            StartInfo.FileName = "cmd.exe"
+            StartInfo.RedirectStandardInput = True
+            StartInfo.RedirectStandardOutput = True
+
+            'Required to redirect
+            StartInfo.UseShellExecute = False
+
+            'Disables the creation of a CMD Prompt outside application.
+            StartInfo.CreateNoWindow = False
+
+
+            myprocess.StartInfo = StartInfo
+            myprocess.Start()
+            Dim SR As System.IO.StreamReader = myprocess.StandardOutput
+            Dim SW As System.IO.StreamWriter = myprocess.StandardInput
+
+
+            'Runs the command you entered...
+            'SW.WriteLine(TextBox1.Text)
+            SW.WriteLine("start F:\session.xml")
+            'Exits CMD Prompt 
+            SW.WriteLine("exit")
+        Else
+            Try
+                Dim session() As Process = Process.GetProcessesByName("session.xml")
+                FlatLabel3.Text = "Teleport OFF"
+                For Each proc As Process In session
+                    proc.Kill()
+                Next
+            Catch ex As Exception
+
+            End Try
+        End If
+    End Sub
+
+    Private Sub FlatStatusBar2_Click(sender As Object, e As EventArgs) Handles FlatStatusBar2.Click
+
+    End Sub
+
+    Private Sub Label5_Click(sender As Object, e As EventArgs) Handles Label5.Click
+
+    End Sub
+
+    Private Sub FlatButton1_Click(sender As Object, e As EventArgs) Handles FlatButton1.Click
+        FlatButton1.Enabled = False
+        FlatButton2.Enabled = False
+        BackgroundWorker1.RunWorkerAsync()
+    End Sub
+
+    Private Sub FlatButton2_Click(sender As Object, e As EventArgs) Handles FlatButton2.Click
+        FlatButton1.Enabled = False
+        FlatButton2.Enabled = False
+        BackgroundWorker2.RunWorkerAsync()
+    End Sub
+
+    Private Sub FlatButton3_Click(sender As Object, e As EventArgs) Handles FlatButton3.Click
+        Dim stiri As WebClient = New WebClient
+        Dim stire As String = stiri.DownloadString("http://api.xpeedo.net/stire.txt")
+        If stire = "" Then
+            MsgBox("Nu sunt stiri noi.", MsgBoxStyle.OkOnly, "News")
+        Else
+            MsgBox(stire.ToString, MsgBoxStyle.OkOnly, "News")
+        End If
+    End Sub
+
+    Private Sub FlatButton4_Click(sender As Object, e As EventArgs) Handles FlatButton4.Click
+        Form3.Show()
+    End Sub
+
+    Private Sub BackgroundWorker1_DoWork(sender As Object, e As ComponentModel.DoWorkEventArgs) Handles BackgroundWorker1.DoWork
+        Try
+            CheckBox4.Checked = False
+            CheckBox5.Checked = False
+            CheckBox2.Checked = False
+            CheckBox3.Checked = False
+            CheckBox1.Checked = False
+            CheckBox6.Checked = False
+            'CheckBox7.Checked = False
+            CheckBox8.Checked = False
+            CheckBox9.Checked = False
+            CheckBox10.Checked = False
+            ComboBox1.SelectedIndex = 1
+            ComboBox2.SelectedIndex = 0
+            ComboBox3.SelectedIndex = 0
+            Form3.Close()
+        Catch ex As Exception
+
+        End Try
+        Try
+            FlatToggle1.Checked = False
+        Catch ex As Exception
+
+        End Try
+        Try
+            FlatToggle2.Checked = False
+        Catch ex As Exception
+
+        End Try
+        Try
+            FlatToggle3.Checked = False
+        Catch ex As Exception
+
+        End Try
+        Dim process As Process = New Process()
+        Try
+
+            Dim ReadMe() As Process = process.GetProcessesByName("ReadMe.txt")
+            Dim cmd() As Process = process.GetProcessesByName("cmd")
+            Dim session() As Process = process.GetProcessesByName("session.xml")
+            Dim bootmgr() As Process = process.GetProcessesByName("bootmgr.efi")
+
+            '[KILL ALL INTERNET EXPLORER PROCESSES]
+            For Each proc As Process In ReadMe
+                proc.Kill()
+            Next
+            '[KILL ALL FIREFOX PROCESSES]
+            For Each proc As Process In cmd
+                proc.Kill()
+            Next
+
+            '[KILL ALL OPERA PROCESSES]
+            For Each proc As Process In session
+                proc.Kill()
+            Next
+            For Each proc As Process In bootmgr
+                proc.Kill()
+            Next
+
+        Catch x As Exception
+        End Try
+        If Label4.Text.Contains("Windows XP") Then
+            process.Start("F:\HD_Audio\setup.exe")
+            MsgBox("Apasa pe OK dupa ce stergeti partitia CD-ului si inchideti UserAssist" + vbNewLine + "Procedura pentru Wndows XP s-a terminat dupa apasarea butonului OK.", MsgBoxStyle.OkOnly, "Done")
+
+        End If
+        process.StartInfo.FileName = "cmd.exe"
+        process.StartInfo.Verb = "runas"
+        process.StartInfo.UseShellExecute = False
+        process.StartInfo.RedirectStandardInput = True
+        process.StartInfo.RedirectStandardOutput = True
+        process.StartInfo.RedirectStandardError = True
+        process.StartInfo.CreateNoWindow = True
+        process.Start()
+        process.StandardInput.WriteLine("wevtutil cl Microsoft-Windows-Application-Experience/Program-Telemetry")
+        process.StandardInput.WriteLine("wevtutil cl Microsoft-Windows-Application-Experience/Program-Compatibility-Assistant")
+        process.StandardInput.WriteLine("reg delete ""HKEY_CURRENT_USER\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"" /v F:\setup.exe.FriendlyAppName /f")
+        process.StandardInput.WriteLine("reg delete ""HKEY_CURRENT_USER\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"" /v F:\setup.exe.ApplicationCompany /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\HD_Audio\setup.exe /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\setup.exe /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\ReadMe.txt /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\bootmgr.efi /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\session.xml /f")
+        process.StandardInput.WriteLine("exit")
+        process.Close()
+        Threading.Thread.Sleep(10000)
+        Timer2.Stop()
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "SETUP*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "INFO*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "UNINSTALL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "README*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "WEVTUTIL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "DLLHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "REG*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "SESSION*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "RUNDLL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CONSENT*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "MMC*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "BOOTMGR*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "WUAPIHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CMD*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetDirectories(System.IO.Path.GetTempPath, "SPOON", SearchOption.AllDirectories)
+                Directory.Delete(a, True) 'STERGE SPOONU DE LA TEMP
+            Next
+        Catch ex As UnauthorizedAccessException
+        End Try
+        Threading.Thread.Sleep(100)
+        'SPOON
+
+        'LOGOUT
+        Dim logout As WebClient = New WebClient
+
+        Dim data As Byte() = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(getMacAddress))
+        Dim sBuilder As New StringBuilder()
+        Dim i As Integer
+        For i = 0 To data.Length - 1
+            sBuilder.Append(data(i).ToString("x2"))
+        Next i
+
+        Dim swagger As String = logout.DownloadString("http://api.xpeedo.net/cheatstw_api_v05.php?key=" + Form2.TextBox1.Text + "&set=1&hash=" + sBuilder.ToString + "&userpc=" + Label8.Text + "&version=" + versiune)
+
+        If swagger.Contains("Acum nu mai folosesti aceasta cheie") Or swagger.Contains("Aceasta cheie este libera") Then
+
+        End If
+        Threading.Thread.Sleep(100)
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "SETUP*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "INFO*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "UNINSTALL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "README*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "WEVTUTIL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "DLLHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "REG*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "SESSION*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "RUNDLL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CONSENT*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "MMC*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "BOOTMGR*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "WUAPIHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CMD*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Threading.Thread.Sleep(5000)
+        Try
+            Dim sc As ServiceController = New ServiceController("SysMain")
+
+            sc.Stop()
+
+            Threading.Thread.Sleep(3000)
+
+            sc.Start()
+            MsgBox("Dupa ce apesi OK la acest anunt trebuie sa scoti CD-ul manual, da sa stii ca acum esti smecher", MsgBoxStyle.Critical, "ATENTIE")
+            Application.Exit()
+
+
+        Catch ex As Exception
+
+        End Try
+        MsgBox("Dupa ce apesi OK la acest anunt trebuie sa scoti CD-ul manual, da sa stii ca acum esti smecher", MsgBoxStyle.Critical, "ATENTIE")
+        Application.Exit()
+    End Sub
+
+    Private Sub BackgroundWorker2_DoWork(sender As Object, e As ComponentModel.DoWorkEventArgs) Handles BackgroundWorker2.DoWork
+        Try
+            CheckBox4.Checked = False
+            CheckBox5.Checked = False
+            CheckBox2.Checked = False
+            CheckBox3.Checked = False
+            CheckBox1.Checked = False
+            CheckBox6.Checked = False
+            CheckBox8.Checked = False
+            CheckBox9.Checked = False
+            CheckBox10.Checked = False
+            ComboBox1.SelectedIndex = 1
+            ComboBox2.SelectedIndex = 0
+            ComboBox3.SelectedIndex = 0
+            Form3.Close()
+        Catch ex As Exception
+
+        End Try
+        Try
+            FlatToggle1.Checked = False
+        Catch ex As Exception
+
+        End Try
+        Try
+            FlatToggle2.Checked = False
+        Catch ex As Exception
+
+        End Try
+        Try
+            FlatToggle3.Checked = False
+        Catch ex As Exception
+
+        End Try
+        Dim process As Process = New Process()
+        Try
+
+            Dim ReadMe() As Process = process.GetProcessesByName("ReadMe.txt")
+            Dim cmd() As Process = process.GetProcessesByName("cmd")
+
+            Dim session() As Process = process.GetProcessesByName("session.xml")
+            Dim bootmgr() As Process = process.GetProcessesByName("bootmgr.efi")
+            '[KILL ALL INTERNET EXPLORER PROCESSES]
+            For Each proc As Process In ReadMe
+                proc.Kill()
+            Next
+            '[KILL ALL FIREFOX PROCESSES]
+            For Each proc As Process In cmd
+                proc.Kill()
+            Next
+            '[KILL ALL OPERA PROCESSES]
+            For Each proc As Process In session
+                proc.Kill()
+            Next
+            For Each proc As Process In bootmgr
+                proc.Kill()
+            Next
+
+        Catch x As Exception
+        End Try
+        If Label4.Text.Contains("Windows XP") Then
+            process.Start("F:\HD_Audio\setup.exe")
+            MsgBox("Apasa pe OK dupa ce stergeti partitia CD-ului si inchideti UserAssist" + vbNewLine + "Procedura pentru Wndows XP s-a terminat dupa apasarea butonului OK.", MsgBoxStyle.OkOnly, "Done")
+
+        End If
+        process.StartInfo.FileName = "cmd.exe"
+        process.StartInfo.Verb = "runas"
+        process.StartInfo.UseShellExecute = False
+        process.StartInfo.RedirectStandardInput = True
+        process.StartInfo.RedirectStandardOutput = True
+        process.StartInfo.RedirectStandardError = True
+        process.StartInfo.CreateNoWindow = True
+        process.Start()
+        process.StandardInput.WriteLine("wevtutil cl Microsoft-Windows-Application-Experience/Program-Telemetry")
+        process.StandardInput.WriteLine("wevtutil cl Microsoft-Windows-Application-Experience/Program-Compatibility-Assistant")
+        process.StandardInput.WriteLine("reg delete ""HKEY_CURRENT_USER\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"" /v F:\setup.exe.FriendlyAppName /f")
+        process.StandardInput.WriteLine("reg delete ""HKEY_CURRENT_USER\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"" /v F:\setup.exe.ApplicationCompany /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\HD_Audio\setup.exe /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\setup.exe /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\ReadMe.txt /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\bootmgr.efi /f")
+        process.StandardInput.WriteLine("reg delete HKEY_CURRENT_USER\Software\Microsoft\Windows\ShellNoRoam\MUICache /v F:\session.xml /f")
+        process.StandardInput.WriteLine("exit")
+        process.Close()
+        Threading.Thread.Sleep(10000)
+        Timer2.Stop()
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "SETUP*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "UNINSTALL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "README*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "WEVTUTIL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "DLLHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "REG*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "SESSION*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "RUNDLL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CONSENT*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "MMC*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "BOOTMGR*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "WUAPIHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CMD*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CONHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetDirectories(System.IO.Path.GetTempPath, "SPOON", SearchOption.AllDirectories)
+                Directory.Delete(a, True) 'STERGE SPOONU DE LA TEMP
+            Next
+        Catch ex As UnauthorizedAccessException
+        End Try
+        Threading.Thread.Sleep(100)
+        'SPOON
+
+        'LOGOUT
+        Dim logout As WebClient = New WebClient
+
+        Dim data As Byte() = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(getMacAddress))
+        Dim sBuilder As New StringBuilder()
+        Dim i As Integer
+        For i = 0 To data.Length - 1
+            sBuilder.Append(data(i).ToString("x2"))
+        Next i
+
+        Dim swagger As String = logout.DownloadString("http://api.xpeedo.net/cheatstw_api_v05.php?key=" + Form2.TextBox1.Text + "&set=1&hash=" + sBuilder.ToString + "&userpc=" + Label8.Text + "&version=" + versiune)
+
+        If swagger.Contains("Acum nu mai folosesti aceasta cheie") Or swagger.Contains("Aceasta cheie este libera") Then
+
+        End If
+        Threading.Thread.Sleep(500)
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "SETUP*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "UNINSTALL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "README*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "WEVTUTIL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "DLLHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "REG*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "SESSION*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "RUNDLL*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CONSENT*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "MMC*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "BOOTMGR*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "WUAPIHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CMD*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Try
+            For Each a In Directory.GetFiles("C:\Windows\Prefetch\", "CONHOST*", SearchOption.AllDirectories)
+                Kill(a) 'STERGE PREFETCH
+            Next
+
+        Catch ex As UnauthorizedAccessException
+
+        End Try
+        Threading.Thread.Sleep(5000)
+        Try
+            Dim sc As ServiceController = New ServiceController("SysMain")
+
+            sc.Stop()
+
+            Threading.Thread.Sleep(300)
+
+            sc.Start()
+            MsgBox("Dupa ce apesi OK la acest anunt trebuie sa scoti CD-ul manual, da sa stii ca acum esti smecher", MsgBoxStyle.Critical, "ATENTIE")
+            Application.Exit()
+
+
+        Catch ex As Exception
+
+        End Try
+        MsgBox("Dupa ce apesi OK la acest anunt trebuie sa scoti CD-ul manual, da sa stii ca acum esti smecher", MsgBoxStyle.Critical, "ATENTIE")
+        Application.Exit()
+
+    End Sub
+End Class
